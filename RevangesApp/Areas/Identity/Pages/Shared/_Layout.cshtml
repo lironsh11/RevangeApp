@@ -2,13 +2,12 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
-
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - אפליקציית נקמות בהשראת כוכבה שביט</title>
+    <title>@ViewData["Title"] - אפליקציית נקמות כוכבה שביט</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -42,29 +41,9 @@
         </main>
     </div>
 
-    <!-- תפריט תחתון למובייל -->
-    <div class="mobile-bottom-nav d-md-none">
-        <a href="@Url.Action("Index", "Home")" class="mobile-nav-item">
-            <i class="fas fa-home"></i>
-            <span>בית</span>
-        </a>
-        <a href="@Url.Action("Index", "Revenge")" class="mobile-nav-item">
-            <i class="fas fa-list"></i>
-            <span>נקמות</span>
-        </a>
-        <a href="@Url.Action("Create", "Revenge")" class="mobile-nav-item">
-            <i class="fas fa-plus"></i>
-            <span>חדשה</span>
-        </a>
-        <a href="@Url.Action("Profile", "Home")" class="mobile-nav-item">
-            <i class="fas fa-crown"></i>
-            <span>כוכבה</span>
-        </a>
-    </div>
-
     <footer class="revenge-footer">
         <div class="container text-center">
-            <p>&copy; 2025 - אפליקציית נקמות בהשראת כוכבה שביט - "פרנציפ הוא אומר לי!" 💋</p>
+            <p>&copy; 2025 - אפליקציית נקמות כוכבה שביט - "הנקמה היא מנה הטובה ביותר כשהיא קרה!" 💋</p>
         </div>
     </footer>
 

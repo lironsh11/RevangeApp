@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using RevengeApp.Models;
+using System.Security.Claims;
 using RevengeApp.Services;
+using RevengeApp.Models;
 
 namespace RevengeApp.Controllers
 {
@@ -17,13 +18,22 @@ namespace RevengeApp.Controllers
         {
             try
             {
-                // Get real data from database
-                var revenges = await _revengeService.GetAllRevengesAsync();
-                return View(revenges);
+                // Check if user is authenticated
+                if (User.Identity?.IsAuthenticated == true)
+                {
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (!string.IsNullOrEmpty(userId))
+                    {
+                        var revenges = await _revengeService.GetAllRevengesForUserAsync(userId);
+                        return View(revenges);
+                    }
+                }
+
+                // Return empty list for non-authenticated users
+                return View(new List<Revenge>());
             }
             catch (Exception ex)
             {
-                // Return empty list if error
                 return View(new List<Revenge>());
             }
         }

@@ -1,0 +1,207 @@
+﻿@page
+@model LogoutModel
+@{
+    ViewData["Title"] = "יציאה מהמערכת";
+}
+
+<div class="identity-page">
+    <div class="container">
+        <div class="identity-form text-center">
+            <h1 class="identity-title">💄 להתראות, מלכת הנקמות! 👑</h1>
+
+            <div style="font-size: 4rem; margin: 2rem 0;">
+                🎭
+            </div>
+
+            <p style="font-size: 1.2rem; color: var(--dramatic-red); margin-bottom: 2rem;">
+                יצאת בהצלחה מאפליקציית הנקמות של כוכבה שביט!
+                <br>
+                תחזרי בקרוב עם עוד נקמות דרמטיות! 🔥
+            </p>
+
+            <div class="d-grid gap-2">
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-revenge btn-lg">
+                    <i class="fas fa-home"></i> חזרה לדף הבית
+                </a>
+                <a asp-page="./Login" class="btn btn-outline-revenge btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> כניסה מחדש
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    :root {
+        --primary-pink: #ff1493;
+        --secondary-gold: #ffd700;
+        --dramatic-red: #dc143c;
+        --royal-purple: #8a2be2;
+        --sparkle-white: #ffffff;
+        --shadow-black: #000080;
+    }
+
+    .identity-page {
+        background: linear-gradient(135deg, var(--primary-pink) 0%, var(--royal-purple) 100%);
+        min-height: 100vh;
+        padding: 3rem 0;
+        font-family: 'Heebo', sans-serif;
+    }
+
+    .identity-form {
+        background: rgba(255,255,255,0.95);
+        border-radius: 25px;
+        padding: 3rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        border: 3px solid var(--secondary-gold);
+        max-width: 500px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .identity-form::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, var(--secondary-gold), transparent);
+            transform: rotate(45deg);
+            opacity: 0.1;
+            animation: shimmer 3s infinite;
+        }
+
+    @@keyframes shimmer {
+        0%
+
+    {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+
+    }
+
+    .identity-title {
+        text-align: center;
+        color: var(--dramatic-red);
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+        z-index: 2;
+    }
+
+    .form-floating > .form-control {
+        border: 2px solid var(--primary-pink);
+        border-radius: 15px;
+        padding: 1rem 1rem;
+        font-size: 1rem;
+        background: rgba(255,255,255,0.9);
+    }
+
+        .form-floating > .form-control:focus {
+            border-color: var(--dramatic-red);
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
+            background: white;
+        }
+
+    .form-floating > label {
+        color: var(--dramatic-red);
+        font-weight: bold;
+        padding: 1rem 1rem;
+    }
+
+    .btn-revenge {
+        background: linear-gradient(45deg, var(--primary-pink), var(--dramatic-red));
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 25px;
+        padding: 15px 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 1.1rem;
+    }
+
+        .btn-revenge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            background: linear-gradient(45deg, var(--dramatic-red), var(--primary-pink));
+            color: white;
+        }
+
+    .btn-outline-revenge {
+        background: transparent;
+        border: 3px solid var(--primary-pink);
+        color: var(--primary-pink);
+        font-weight: bold;
+        border-radius: 25px;
+        padding: 12px 30px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+        .btn-outline-revenge:hover {
+            background: var(--primary-pink);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,20,147,0.4);
+        }
+
+    .form-check-input:checked {
+        background-color: var(--primary-pink);
+        border-color: var(--primary-pink);
+    }
+
+    .text-danger {
+        color: var(--dramatic-red) !important;
+        font-weight: bold;
+    }
+
+    .alert-info {
+        background: rgba(255,215,0,0.1) !important;
+        border: 2px solid var(--secondary-gold) !important;
+        color: var(--dramatic-red) !important;
+        border-radius: 15px;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .identity-form
+
+    {
+        margin: 1rem;
+        padding: 2rem 1.5rem;
+    }
+
+    .identity-title {
+        font-size: 2rem;
+    }
+
+    }
+
+    /* Animation for form elements */
+    .form-floating {
+        position: relative;
+        z-index: 2;
+    }
+
+        .form-floating > .form-control {
+            transition: all 0.3s ease;
+        }
+
+        .form-floating:hover > .form-control {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+</style>

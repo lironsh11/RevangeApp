@@ -5,7 +5,8 @@ namespace RevengeApp.Models
     public class Revenge
     {
         public int Id { get; set; }
-
+        [Required]
+        public string UserId { get; set; } = string.Empty;
         [Required(ErrorMessage = "שם הנקמה הוא שדה חובה")]
         [Display(Name = "שם הנקמה")]
         public string Title { get; set; } = string.Empty;

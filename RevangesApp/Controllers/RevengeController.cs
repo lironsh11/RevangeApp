@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using RevengeApp.Services;
 using RevengeApp.Models;
 
 namespace RevengeApp.Controllers
 {
+    [Authorize] // Require authentication for all actions
     public class RevengeController : Controller
     {
         private readonly IRevengeService _revengeService;
@@ -13,13 +16,19 @@ namespace RevengeApp.Controllers
             _revengeService = revengeService;
         }
 
-        // GET: רשימת נקמות
+        private string GetCurrentUserId()
+        {
+            return User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        }
+
+        // GET: Display user's revenges only
         public async Task<IActionResult> Index()
         {
             try
             {
-                var revenges = await _revengeService.GetAllRevengesAsync();
-                return View(revenges ?? new List<Revenge>());
+                var userId = GetCurrentUserId();
+                var revenges = await _revengeService.GetAllRevengesForUserAsync(userId);
+                return View(revenges);
             }
             catch (Exception ex)
             {
@@ -27,38 +36,54 @@ namespace RevengeApp.Controllers
             }
         }
 
-        // GET: טופס נקמה חדשה
+        // GET: Show create revenge form
         public IActionResult Create()
         {
             return View(new Revenge());
         }
 
-        // POST: שמירת נקמה חדשה
+        // POST: Save new revenge for current user
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Revenge revenge)
         {
+            // Remove UserId from ModelState validation since we set it manually
+            ModelState.Remove("UserId");
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _revengeService.AddRevengeAsync(revenge);
+                    var userId = GetCurrentUserId();
+                    Console.WriteLine($"Creating revenge for user: {userId}"); // Debug line
+                    await _revengeService.AddRevengeForUserAsync(revenge, userId);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "שגיאה בשמירת הנקמה. נסי שוב!");
+                    Console.WriteLine($"Error creating revenge: {ex.Message}"); // Debug line
+                    ModelState.AddModelError("", "Error saving revenge. Please try again!");
                 }
             }
+            else
+            {
+                // Debug: show validation errors
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"Validation error: {error.ErrorMessage}");
+                }
+            }
+
             return View(revenge);
         }
 
-        // GET: טופס עריכת נקמה
+        // GET: Show edit form for user's revenge only
         public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                var revenge = await _revengeService.GetRevengeByIdAsync(id);
+                var userId = GetCurrentUserId();
+                var revenge = await _revengeService.GetRevengeByIdForUserAsync(id, userId);
                 if (revenge == null)
                 {
                     return NotFound();
@@ -71,7 +96,7 @@ namespace RevengeApp.Controllers
             }
         }
 
-        // POST: שמירת עריכה
+        // POST: Update user's revenge only
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Revenge revenge)
@@ -81,32 +106,35 @@ namespace RevengeApp.Controllers
                 return NotFound();
             }
 
+            // Remove UserId from ModelState validation
+            ModelState.Remove("UserId");
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _revengeService.UpdateRevengeAsync(revenge);
+                    var userId = GetCurrentUserId();
+                    await _revengeService.UpdateRevengeForUserAsync(revenge, userId);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "שגיאה בעדכון הנקמה. נסי שוב!");
+                    Console.WriteLine($"Error updating revenge: {ex.Message}"); // Debug line
+                    ModelState.AddModelError("", "Error updating revenge. Please try again!");
                 }
             }
+
             return View(revenge);
         }
 
-        // GET: מחיקת נקמה
+        // GET: Delete user's revenge only
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var success = await _revengeService.DeleteRevengeAsync(id);
-                if (success)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                return NotFound();
+                var userId = GetCurrentUserId();
+                await _revengeService.DeleteRevengeForUserAsync(id, userId);
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
@@ -114,40 +142,23 @@ namespace RevengeApp.Controllers
             }
         }
 
-        // POST: סימון נקמה כהושלמה (AJAX)
+        // POST: Complete user's revenge only (AJAX endpoint)
         [HttpPost]
         public async Task<IActionResult> Complete(int id)
         {
             try
             {
-                var success = await _revengeService.CompleteRevengeAsync(id);
+                var userId = GetCurrentUserId();
+                var success = await _revengeService.CompleteRevengeForUserAsync(id, userId);
                 if (success)
                 {
-                    return Json(new { success = true, message = "הנקמה הושלמה בהצלחה!" });
+                    return Json(new { success = true, message = "Revenge completed successfully!" });
                 }
-                return Json(new { success = false, message = "שגיאה בעדכון הנקמה" });
+                return Json(new { success = false, message = "Error updating revenge" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "שגיאה בעדכון הנקמה" });
-            }
-        }
-
-        // GET: פרטי נקמה (אופציונלי)
-        public async Task<IActionResult> Details(int id)
-        {
-            try
-            {
-                var revenge = await _revengeService.GetRevengeByIdAsync(id);
-                if (revenge == null)
-                {
-                    return NotFound();
-                }
-                return View(revenge);
-            }
-            catch (Exception ex)
-            {
-                return NotFound();
+                return Json(new { success = false, message = "Error updating revenge" });
             }
         }
     }

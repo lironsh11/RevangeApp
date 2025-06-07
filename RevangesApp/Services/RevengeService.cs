@@ -13,33 +13,52 @@ namespace RevengeApp.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Revenge>> GetAllRevengesAsync()
+        public async Task<IEnumerable<Revenge>> GetAllRevengesForUserAsync(string userId)
         {
-            return await _context.Revenges.OrderByDescending(r => r.Date).ToListAsync();
+            return await _context.Revenges
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.Date)
+                .ToListAsync();
         }
 
-        public async Task<Revenge?> GetRevengeByIdAsync(int id)
+        public async Task<Revenge?> GetRevengeByIdForUserAsync(int id, string userId)
         {
-            return await _context.Revenges.FindAsync(id);
+            return await _context.Revenges
+                .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
         }
 
-        public async Task<Revenge> AddRevengeAsync(Revenge revenge)
+        public async Task<Revenge> AddRevengeForUserAsync(Revenge revenge, string userId)
         {
+            revenge.UserId = userId;
             _context.Revenges.Add(revenge);
             await _context.SaveChangesAsync();
             return revenge;
         }
 
-        public async Task<Revenge> UpdateRevengeAsync(Revenge revenge)
+        public async Task<Revenge> UpdateRevengeForUserAsync(Revenge revenge, string userId)
         {
-            _context.Entry(revenge).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return revenge;
+            var existingRevenge = await GetRevengeByIdForUserAsync(revenge.Id, userId);
+            if (existingRevenge != null)
+            {
+                existingRevenge.Title = revenge.Title;
+                existingRevenge.Description = revenge.Description;
+                existingRevenge.Target = revenge.Target;
+                existingRevenge.Date = revenge.Date;
+                existingRevenge.Status = revenge.Status;
+                existingRevenge.DramaLevel = revenge.DramaLevel;
+                existingRevenge.Category = revenge.Category;
+                existingRevenge.Notes = revenge.Notes;
+                existingRevenge.CompletedDate = revenge.CompletedDate;
+
+                await _context.SaveChangesAsync();
+                return existingRevenge;
+            }
+            throw new InvalidOperationException("Revenge not found or access denied");
         }
 
-        public async Task<bool> DeleteRevengeAsync(int id)
+        public async Task<bool> DeleteRevengeForUserAsync(int id, string userId)
         {
-            var revenge = await _context.Revenges.FindAsync(id);
+            var revenge = await GetRevengeByIdForUserAsync(id, userId);
             if (revenge != null)
             {
                 _context.Revenges.Remove(revenge);
@@ -49,35 +68,9 @@ namespace RevengeApp.Services
             return false;
         }
 
-        public async Task<IEnumerable<Revenge>> SearchRevengesAsync(string searchTerm)
+        public async Task<bool> CompleteRevengeForUserAsync(int id, string userId)
         {
-            return await _context.Revenges
-                .Where(r => r.Title.Contains(searchTerm) ||
-                           r.Description.Contains(searchTerm) ||
-                           r.Target.Contains(searchTerm))
-                .OrderByDescending(r => r.Date)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Revenge>> FilterRevengesAsync(RevengeStatus? status, RevengeCategory? category, int? dramaLevel)
-        {
-            var query = _context.Revenges.AsQueryable();
-
-            if (status.HasValue)
-                query = query.Where(r => r.Status == status.Value);
-
-            if (category.HasValue)
-                query = query.Where(r => r.Category == category.Value);
-
-            if (dramaLevel.HasValue)
-                query = query.Where(r => r.DramaLevel == dramaLevel.Value);
-
-            return await query.OrderByDescending(r => r.Date).ToListAsync();
-        }
-
-        public async Task<bool> CompleteRevengeAsync(int id)
-        {
-            var revenge = await _context.Revenges.FindAsync(id);
+            var revenge = await GetRevengeByIdForUserAsync(id, userId);
             if (revenge != null)
             {
                 revenge.Status = RevengeStatus.Completed;
