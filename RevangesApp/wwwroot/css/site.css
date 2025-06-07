@@ -1,0 +1,302 @@
+﻿/* Kokava Shabit Theme - Dramatic Colors */
+:root {
+    --primary-pink: #ff1493;
+    --secondary-gold: #ffd700;
+    --dramatic-red: #dc143c;
+    --royal-purple: #8a2be2;
+    --sparkle-white: #ffffff;
+    --shadow-black: #000080;
+}
+
+body.revenge-body {
+    font-family: 'Heebo', sans-serif;
+    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--royal-purple) 100%);
+    min-height: 100vh;
+    color: var(--sparkle-white);
+}
+
+/* Dramatic Navigation */
+.revenge-navbar {
+    background: linear-gradient(90deg, var(--dramatic-red), var(--primary-pink));
+    border-bottom: 3px solid var(--secondary-gold);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.revenge-brand {
+    font-size: 1.8rem;
+    font-weight: 900;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    animation: sparkle 2s infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Dramatic Titles */
+.revenge-title {
+    font-size: 3rem;
+    font-weight: 900;
+    text-align: center;
+    margin: 2rem 0;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+    color: var(--secondary-gold);
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.7), 0 0 30px var(--secondary-gold);
+    }
+
+    to {
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.7), 0 0 40px var(--primary-pink);
+    }
+}
+
+.drama-subtitle {
+    display: block;
+    font-size: 1.2rem;
+    color: var(--sparkle-white);
+    font-weight: 400;
+    margin-top: 0.5rem;
+}
+
+/* Revenge Cards */
+.revenge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.revenge-card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    padding: 1.5rem;
+    color: var(--shadow-black);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 3px solid var(--secondary-gold);
+    transform: translateY(0);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+    .revenge-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, var(--secondary-gold), transparent);
+        transform: rotate(45deg);
+        transition: all 0.5s;
+        opacity: 0;
+    }
+
+    .revenge-card:hover::before {
+        animation: shimmer 1.5s ease-in-out;
+    }
+
+    .revenge-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+        opacity: 0;
+    }
+}
+
+/* Status colors */
+.status-planned {
+    border-left: 8px solid #ffa500;
+}
+
+.status-progress {
+    border-left: 8px solid #4169e1;
+}
+
+.status-completed {
+    border-left: 8px solid #32cd32;
+    background: linear-gradient(135deg, rgba(50,205,50,0.1), rgba(255,215,0,0.1));
+}
+
+.status-cancelled {
+    border-left: 8px solid #696969;
+}
+
+/* Drama Level */
+.drama-level {
+    display: flex;
+    gap: 0.3rem;
+    margin: 0.5rem 0;
+}
+
+.drama-active {
+    color: var(--dramatic-red);
+    font-size: 1.2rem;
+    animation: pulse 2s infinite;
+}
+
+.drama-inactive {
+    color: #ddd;
+    font-size: 1.2rem;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Dramatic Buttons */
+.btn-revenge {
+    background: linear-gradient(45deg, var(--primary-pink), var(--dramatic-red));
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 25px;
+    padding: 12px 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+    .btn-revenge:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        background: linear-gradient(45deg, var(--dramatic-red), var(--primary-pink));
+    }
+
+/* Completion Animation */
+.completed-animation {
+    animation: celebration 1s ease-in-out;
+}
+
+@keyframes celebration {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    25% {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(-5deg);
+    }
+
+    75% {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    /* Fix for mobile bottom navigation overlap */
+    body.revenge-body {
+        padding-bottom: 90px; /* Space for mobile nav + margin */
+    }
+
+    .revenge-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+
+    .revenge-title {
+        font-size: 2rem;
+    }
+
+    .revenge-card {
+        padding: 1rem;
+    }
+
+    /* Mobile Bottom Navigation */
+    .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, var(--dramatic-red), var(--primary-pink));
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 10px 0;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+        border-top: 3px solid var(--secondary-gold);
+        z-index: 1000;
+        height: 70px; /* Fixed height */
+    }
+
+    .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: bold;
+        padding: 5px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        min-width: 60px;
+    }
+
+        .mobile-nav-item:hover,
+        .mobile-nav-item:focus {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            color: var(--secondary-gold);
+            text-decoration: none;
+        }
+
+        .mobile-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+}
+
+/* Hide mobile nav on larger screens */
+@media (min-width: 769px) {
+    .mobile-bottom-nav {
+        display: none;
+    }
+
+    body.revenge-body {
+        padding-bottom: 0; /* Remove padding on larger screens */
+    }
+}

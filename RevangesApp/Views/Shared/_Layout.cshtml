@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - אפליקציית נקמות בהשראת כוכבה שביט</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="revenge-body">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark revenge-navbar">
+            <div class="container">
+                <a class="navbar-brand revenge-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    💄 אפליקציית הנקמות 🔥
+                </a>
+                <div class="navbar-nav">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">🏠 בית</a>
+                    <a class="nav-link" asp-area="" asp-controller="Revenge" asp-action="Index">💋 נקמות</a>
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Profile">כוכבה</a>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container revenge-container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- תפריט תחתון למובייל -->
+    <div class="mobile-bottom-nav d-md-none">
+        <a href="@Url.Action("Index", "Home")" class="mobile-nav-item">
+            <i class="fas fa-home"></i>
+            <span>בית</span>
+        </a>
+        <a href="@Url.Action("Index", "Revenge")" class="mobile-nav-item">
+            <i class="fas fa-list"></i>
+            <span>נקמות</span>
+        </a>
+        <a href="@Url.Action("Create", "Revenge")" class="mobile-nav-item">
+            <i class="fas fa-plus"></i>
+            <span>חדשה</span>
+        </a>
+        <a href="@Url.Action("Profile", "Home")" class="mobile-nav-item">
+            <i class="fas fa-crown"></i>
+            <span>כוכבה</span>
+        </a>
+    </div>
+
+    <footer class="revenge-footer">
+        <div class="container text-center">
+            <p>&copy; 2025 - אפליקציית נקמות בהשראת כוכבה שביט - "הנקמה היא מנה הטובה ביותר כשהיא קרה!" 💋</p>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

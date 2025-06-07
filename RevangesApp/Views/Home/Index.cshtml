@@ -1,0 +1,773 @@
+﻿@using RevengeApp.Models
+@model IEnumerable<RevengeApp.Models.Revenge>
+
+@{
+    ViewData["Title"] = "דף הבית - כוכבה שביט";
+
+    // Calculate real statistics from the data
+    var totalRevenges = Model?.Count() ?? 0;
+    var plannedRevenges = Model?.Count(r => r.Status == RevengeStatus.Planned) ?? 0;
+    var completedRevenges = Model?.Count(r => r.Status == RevengeStatus.Completed) ?? 0;
+    var averageDrama = Model?.Any() == true ? Model.Average(r => r.DramaLevel) : 0;
+}
+
+<div class="home-hero">
+    <div class="hero-content">
+        <h1 class="hero-title">
+            ברוכים הבאים לאפליקציית הנקמות של כוכבה שביט! 💄
+        </h1>
+
+        <!-- כאן תמונת כוכבה -->
+        <div class="kokava-image-container">
+            <img src="~/images/kokava-portrait.jpg" alt="כוכבה שביט" class="kokava-portrait" />
+        </div>
+
+        <p class="hero-subtitle">
+            נגמר הבורדל חמוד
+            <br>דה שריף איז בק אין טאון!
+        </p>
+
+        <div class="hero-stats">
+            <div class="stat-card">
+                <h3>💋</h3>
+                <p>נקמות בתכנון</p>
+                <span class="stat-number">@plannedRevenges</span>
+            </div>
+            <div class="stat-card">
+                <h3>✨</h3>
+                <p>נקמות שבוצעו</p>
+                <span class="stat-number">@completedRevenges</span>
+            </div>
+            <div class="stat-card">
+                <h3>🎯</h3>
+                <p>רמת דרמתיות ממוצעת</p>
+                <span class="stat-number">@averageDrama.ToString("F1")</span>
+            </div>
+        </div>
+
+        <div class="hero-actions">
+            <a asp-controller="Revenge" asp-action="Create" class="btn btn-revenge btn-hero">
+                <i class="fas fa-magic"></i> תכנן נקמה חדשה!
+            </a>
+            <a asp-controller="Revenge" asp-action="Index" class="btn btn-outline-revenge btn-hero">
+                <i class="fas fa-list"></i> רשימת הנקמות שלי
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="recent-revenges-section">
+        <div class="container">
+            <h2 class="section-title">הנקמות האחרונות שלי 💫</h2>
+
+            <div class="recent-revenges-grid">
+                @foreach (var revenge in Model.Take(3))
+                {
+                    <div class="recent-revenge-card status-@revenge.Status.ToString().ToLower()">
+                        <div class="revenge-header">
+                            <h4>@revenge.Title</h4>
+                            <div class="drama-level">
+                                @for (int i = 1; i <= revenge.DramaLevel; i++)
+                                {
+                                    <span class="drama-heart">💋</span>
+                                }
+                            </div>
+                        </div>
+
+                        <p class="revenge-description">@revenge.Description.Substring(0, Math.Min(100, revenge.Description.Length))@(revenge.Description.Length > 100 ? "..." : "")</p>
+
+                        <div class="revenge-meta">
+                            <span class="revenge-target">🎯 @revenge.Target</span>
+                            <span class="revenge-date">📅 @revenge.Date.ToString("dd/MM/yyyy")</span>
+                        </div>
+
+                        <div class="revenge-status">
+                            @{
+                                string statusIcon = revenge.Status switch
+                                {
+                                    RevengeStatus.Planned => "🎯",
+                                    RevengeStatus.InProgress => "⚡",
+                                    RevengeStatus.Completed => "✅",
+                                    RevengeStatus.Cancelled => "❌",
+                                    _ => "🎭"
+                                };
+
+                                string statusText = revenge.Status switch
+                                {
+                                    RevengeStatus.Planned => "מתוכננת",
+                                    RevengeStatus.InProgress => "בביצוע",
+                                    RevengeStatus.Completed => "הושלמה",
+                                    RevengeStatus.Cancelled => "בוטלה",
+                                    _ => "לא ידוע"
+                                };
+                            }
+                            @statusIcon @statusText
+                        </div>
+
+                        <div class="card-actions">
+                            <a asp-controller="Revenge" asp-action="Edit" asp-route-id="@revenge.Id" class="btn btn-sm btn-edit">
+                                <i class="fas fa-edit"></i> ערוך
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="view-all-section">
+                <a asp-controller="Revenge" asp-action="Index" class="btn btn-revenge">
+                    <i class="fas fa-list"></i> צפי בכל הנקמות (@totalRevenges)
+                </a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="no-revenges-home">
+        <div class="container">
+            <div class="no-revenges-content">
+                <div class="no-revenges-icon">🎭</div>
+                <h2>עדיין לא התחלת את מסע הנקמות שלך!</h2>
+                <p>זמן להראות לעולם מי כוכבה שביט באמת! 💄👑</p>
+                <a asp-controller="Revenge" asp-action="Create" class="btn btn-revenge btn-lg">
+                    <i class="fas fa-magic"></i> תכנני את הנקמה הראשונה שלך!
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="home-features">
+    <div class="container">
+        <h2 class="features-title">למה כוכבה שביט היא המלכה של הנקמות? 👑</h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💄</div>
+                <h3>סגנון דרמטי</h3>
+                <p>כל נקמה עם הסגנון הייחודי של כוכבה - דרמטית, צבעונית ובלתי נשכחת!</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>תכנון מדויק</h3>
+                <p>כלי תכנון מתקדם שיעזור לך לתכנן כל פרט בנקמה המושלמת שלך</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>נוח למובייל</h3>
+                <p>תכנן נקמות בכל מקום ובכל זמן - בבית, בעבודה, או בקניות!</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔥</div>
+                <h3>רמות דרמתיות</h3>
+                <p>דרג את הנקמות שלך מ-1 עד 5 שפתונים לפי רמת הדרמתיות!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="kokava-quotes">
+    <div class="container">
+        <h2 class="quotes-title">ציטוטים מעוררי השראה מכוכבה שביט 💫</h2>
+        <div class="quotes-carousel">
+            <div class="quote active">
+                <p>"את השקיות הוא רוצה להחזיר!"</p>
+                <span>- כוכבה שביט</span>
+            </div>
+            <div class="quote">
+                <p>"גוד מורנינג נבלות!"</p>
+                <span>- כוכבה שביט</span>
+            </div>
+            <div class="quote">
+                <p>"כמה היו גרועים הזרעונים האחרים שאתה הגעת ראשון?"</p>
+                <span>- כוכבה שביט</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-pink: #ff1493;
+        --secondary-gold: #ffd700;
+        --dramatic-red: #dc143c;
+        --royal-purple: #8a2be2;
+        --sparkle-white: #ffffff;
+        --shadow-black: #000080;
+    }
+
+    .home-hero {
+        background: linear-gradient(135deg, var(--primary-pink) 0%, var(--royal-purple) 50%, var(--dramatic-red) 100%);
+        padding: 4rem 2rem;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .home-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><text y="15" font-size="12">💋💄✨🔥👑💫</text></svg>') repeat;
+            opacity: 0.1;
+            animation: float 10s infinite linear;
+        }
+
+    @@keyframes float {
+        0%
+
+    {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100px);
+    }
+
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+        animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    /* עיצוב לתמונת כוכבה */
+    .kokava-image-container {
+        margin: 2rem auto;
+        text-align: center;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .kokava-portrait {
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        border: 8px solid var(--secondary-gold);
+        box-shadow: 0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,20,147,0.6);
+        object-fit: cover;
+        object-position: center center;
+        animation: portrait-glow 3s ease-in-out infinite alternate;
+        transition: all 0.3s ease;
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+        .kokava-portrait:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(255,215,0,1), 0 0 80px rgba(255,20,147,0.8);
+        }
+
+    @@keyframes portrait-glow {
+        from
+
+    {
+        box-shadow: 0 0 20px rgba(255,215,0,0.6), 0 0 40px rgba(255,20,147,0.4);
+    }
+
+    to {
+        box-shadow: 0 0 40px rgba(255,215,0,1), 0 0 80px rgba(255,20,147,0.8);
+    }
+
+    }
+
+    @@keyframes glow {
+        from
+
+    {
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.7), 0 0 30px var(--secondary-gold);
+    }
+
+    to {
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.7), 0 0 40px var(--primary-pink);
+    }
+
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 3rem;
+        line-height: 1.6;
+        opacity: 0.95;
+    }
+
+    .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin: 3rem 0;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        background: rgba(255,255,255,0.2);
+        border-radius: 20px;
+        padding: 1.5rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255,255,255,0.3);
+        transition: transform 0.3s ease;
+        min-width: 150px;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--secondary-gold);
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .hero-actions {
+        margin-top: 3rem;
+    }
+
+    .btn-hero {
+        font-size: 1.2rem;
+        padding: 15px 30px;
+        margin: 0 1rem;
+        border-radius: 30px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-revenge {
+        background: linear-gradient(45deg, var(--primary-pink), var(--dramatic-red));
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 25px;
+        padding: 12px 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-revenge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            background: linear-gradient(45deg, var(--dramatic-red), var(--primary-pink));
+            color: white;
+            text-decoration: none;
+        }
+
+    .btn-outline-revenge {
+        background: transparent;
+        border: 3px solid white;
+        color: white;
+    }
+
+        .btn-outline-revenge:hover {
+            background: white;
+            color: var(--primary-pink);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-decoration: none;
+        }
+
+    /* Recent Revenges Section */
+    .recent-revenges-section {
+        padding: 4rem 0;
+        background: rgba(255,255,255,0.95);
+        color: var(--shadow-black);
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--dramatic-red);
+        margin-bottom: 3rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .recent-revenges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .recent-revenge-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border: 3px solid var(--secondary-gold);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .recent-revenge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .recent-revenge-card.status-completed {
+            border-left: 8px solid #32cd32;
+            background: linear-gradient(135deg, rgba(50,205,50,0.05), rgba(255,215,0,0.05));
+        }
+
+        .recent-revenge-card.status-planned {
+            border-left: 8px solid #ffa500;
+        }
+
+        .recent-revenge-card.status-progress {
+            border-left: 8px solid #4169e1;
+        }
+
+    .revenge-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+        .revenge-header h4 {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--dramatic-red);
+            margin: 0;
+            flex: 1;
+        }
+
+    .drama-level {
+        display: flex;
+        gap: 0.2rem;
+    }
+
+    .drama-heart {
+        font-size: 1rem;
+        animation: pulse 2s infinite;
+    }
+
+    .revenge-description {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        color: #555;
+    }
+
+    .revenge-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+    .revenge-target, .revenge-date {
+        background: rgba(255,20,147,0.1);
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255,20,147,0.2);
+    }
+
+    .revenge-status {
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 1rem;
+        background: var(--secondary-gold);
+        color: var(--shadow-black);
+    }
+
+    .card-actions {
+        text-align: center;
+    }
+
+    .btn-edit {
+        background: #ffa500;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-edit:hover {
+            background: #ff8c00;
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+    .view-all-section {
+        text-align: center;
+    }
+
+    /* No Revenges Home */
+    .no-revenges-home {
+        padding: 4rem 0;
+        background: rgba(255,255,255,0.95);
+    }
+
+    .no-revenges-content {
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 3rem;
+        background: rgba(255,20,147,0.1);
+        border-radius: 25px;
+        border: 3px solid rgba(255,215,0,0.5);
+    }
+
+    .no-revenges-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+
+    @@keyframes bounce {
+        0%, 100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+
+    }
+
+    .no-revenges-content h2 {
+        font-size: 2rem;
+        color: var(--dramatic-red);
+        margin-bottom: 1rem;
+    }
+
+    .no-revenges-content p {
+        font-size: 1.2rem;
+        color: var(--shadow-black);
+        margin-bottom: 2rem;
+    }
+
+    /* Features Section */
+    .home-features {
+        padding: 5rem 0;
+        background: rgba(255,255,255,0.95);
+        color: var(--shadow-black);
+    }
+
+    .features-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--dramatic-red);
+        margin-bottom: 3rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(135deg, rgba(255,20,147,0.1), rgba(255,215,0,0.1));
+        border-radius: 20px;
+        border: 2px solid var(--secondary-gold);
+        transition: all 0.3s ease;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border-color: var(--primary-pink);
+        }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--dramatic-red);
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        color: var(--shadow-black);
+        line-height: 1.6;
+    }
+
+    /* Quotes Section */
+    .kokava-quotes {
+        background: linear-gradient(135deg, var(--royal-purple), var(--primary-pink));
+        padding: 4rem 0;
+        color: white;
+        text-align: center;
+    }
+
+    .quotes-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 3rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .quotes-carousel {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        height: 150px;
+    }
+
+    .quote {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        padding: 2rem;
+    }
+
+        .quote.active {
+            opacity: 1;
+        }
+
+        .quote p {
+            font-size: 1.8rem;
+            font-style: italic;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .quote span {
+            font-size: 1.2rem;
+            color: var(--secondary-gold);
+            font-weight: bold;
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .hero-title
+
+    {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .kokava-portrait {
+        width: 220px;
+        height: 220px;
+    }
+
+    .hero-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stat-card {
+        width: 200px;
+    }
+
+    .btn-hero {
+        display: block;
+        margin: 1rem auto;
+        width: 80%;
+    }
+
+    .recent-revenges-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quote p {
+        font-size: 1.4rem;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Quotes carousel
+            let currentQuote = 0;
+            const quotes = $('.quote');
+            const totalQuotes = quotes.length;
+
+            function showNextQuote() {
+                $(quotes[currentQuote]).removeClass('active');
+                currentQuote = (currentQuote + 1) % totalQuotes;
+                $(quotes[currentQuote]).addClass('active');
+            }
+
+            // Change quote every 4 seconds
+            setInterval(showNextQuote, 4000);
+
+            // Scroll animations
+            $(window).on('scroll', function() {
+                $('.feature-card, .recent-revenge-card').each(function() {
+                    const elementTop = $(this).offset().top;
+                    const windowBottom = $(window).scrollTop() + $(window).height();
+
+                    if (elementTop < windowBottom - 50) {
+                        $(this).addClass('animate-in');
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,297 @@
+﻿@using RevengeApp.Models
+@model RevengeApp.Models.Revenge
+
+@{
+    ViewData["Title"] = "עריכת נקמה";
+}
+
+<div class="edit-revenge-page">
+    <div class="page-header">
+        <h1 class="page-title">
+            ✨ עריכת הנקמה: "@Model.Title" 💫
+            <small class="page-subtitle">זמן לשדרג את התכנית הדרמטית!</small>
+        </h1>
+    </div>
+
+    <div class="revenge-form-container">
+        <form asp-action="Edit" method="post" class="revenge-form">
+            <input asp-for="Id" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group drama-form-group">
+                <label asp-for="Title" class="drama-label">
+                    <i class="fas fa-fire"></i> שם הנקמה
+                </label>
+                <input asp-for="Title" class="form-control drama-input" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group drama-form-group">
+                <label asp-for="Description" class="drama-label">
+                    <i class="fas fa-scroll"></i> תיאור מפורט של הנקמה
+                </label>
+                <textarea asp-for="Description" class="form-control drama-textarea" rows="4"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group drama-form-group">
+                <label asp-for="Target" class="drama-label">
+                    <i class="fas fa-crosshairs"></i> מי הקורבן?
+                </label>
+                <input asp-for="Target" class="form-control drama-input" />
+                <span asp-validation-for="Target" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group drama-form-group">
+                        <label asp-for="Category" class="drama-label">
+                            <i class="fas fa-tags"></i> סוג הנקמה
+                        </label>
+                        <select asp-for="Category" class="form-control drama-select">
+                            <option value="Ex">💔 נקמת אקס</option>
+                            <option value="Neighbor">🏠 נקמת שכן</option>
+                            <option value="AnnoyingCustomer">😤 נקמת לקוחה מעצבנת</option>
+                            <option value="Work">💼 נקמת עבודה</option>
+                            <option value="Family">👨‍👩‍👧‍👦 נקמת משפחה</option>
+                            <option value="Friend">👯‍♀️ נקמת חברה</option>
+                            <option value="Other">🎭 אחר</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group drama-form-group">
+                        <label asp-for="DramaLevel" class="drama-label">
+                            <i class="fas fa-kiss-wink-heart"></i> רמת דרמתיות (1-5)
+                        </label>
+                        <select asp-for="DramaLevel" class="form-control drama-select drama-level-select">
+                            <option value="1">💋 1 - קלילה</option>
+                            <option value="2">💋💋 2 - בינונית</option>
+                            <option value="3">💋💋💋 3 - דרמטית</option>
+                            <option value="4">💋💋💋💋 4 - מאוד דרמטית</option>
+                            <option value="5">💋💋💋💋💋 5 - סופר דרמטית!</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group drama-form-group">
+                        <label asp-for="Date" class="drama-label">
+                            <i class="fas fa-calendar-alt"></i> תאריך מתוכנן
+                        </label>
+                        <input asp-for="Date" type="date" class="form-control drama-input" />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group drama-form-group">
+                        <label asp-for="Status" class="drama-label">
+                            <i class="fas fa-flag"></i> סטטוס
+                        </label>
+                        <select asp-for="Status" class="form-control drama-select status-select">
+                            <option value="Planned">🎯 מתוכננת</option>
+                            <option value="InProgress">⚡ בביצוע</option>
+                            <option value="Completed">✅ הושלמה</option>
+                            <option value="Cancelled">❌ בוטלה</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Status == RevengeStatus.Completed && Model.CompletedDate.HasValue)
+            {
+                <div class="completion-info">
+                    <div class="completion-badge">
+                        <i class="fas fa-crown"></i>
+                        הנקמה הושלמה בתאריך: @Model.CompletedDate.Value.ToString("dd/MM/yyyy HH:mm")
+                        <i class="fas fa-crown"></i>
+                    </div>
+                </div>
+            }
+
+            <div class="form-group drama-form-group">
+                <label asp-for="Notes" class="drama-label">
+                    <i class="fas fa-sticky-note"></i> הערות נוספות
+                </label>
+                <textarea asp-for="Notes" class="form-control drama-textarea" rows="3"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-revenge btn-lg">
+                    <i class="fas fa-save"></i> שמור שינויים 💾
+                </button>
+                <a asp-action="Index" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-arrow-right"></i> חזרה לרשימה
+                </a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger btn-lg"
+                   onclick="return confirm('בטוחה שרוצה למחוק את הנקמה הזו לצמיתות?')">
+                    <i class="fas fa-trash"></i> מחק נקמה
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .edit-revenge-page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .completion-info {
+        background: linear-gradient(135deg, #32cd32, #ffd700);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        text-align: center;
+    }
+
+    .completion-badge {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        animation: celebration-glow 2s infinite alternate;
+    }
+
+    @@keyframes celebration-glow {
+        from
+
+    {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    to {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.8);
+    }
+
+    }
+
+    .status-select option[value="Completed"] {
+        background: linear-gradient(135deg, #32cd32, #ffd700);
+        color: white;
+        font-weight: bold;
+    }
+
+    .form-actions .btn-danger {
+        background: linear-gradient(45deg, #dc143c, #8b0000);
+        border: none;
+        color: white;
+    }
+
+        .form-actions .btn-danger:hover {
+            background: linear-gradient(45deg, #8b0000, #dc143c);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(139,0,0,0.4);
+        }
+
+    /* כל השאר זהה ל-Create */
+    .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--secondary-gold);
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        margin-bottom: 1rem;
+    }
+
+    .page-subtitle {
+        display: block;
+        font-size: 1.2rem;
+        color: var(--sparkle-white);
+        font-weight: 400;
+        margin-top: 0.5rem;
+    }
+
+    .revenge-form-container {
+        background: rgba(255,255,255,0.95);
+        border-radius: 25px;
+        padding: 2.5rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        border: 3px solid var(--secondary-gold);
+    }
+
+    .drama-form-group {
+        margin-bottom: 2rem;
+    }
+
+    .drama-label {
+        font-weight: bold;
+        color: var(--dramatic-red);
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .drama-input, .drama-select, .drama-textarea {
+        border: 2px solid var(--primary-pink);
+        border-radius: 15px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .drama-input:focus, .drama-select:focus, .drama-textarea:focus {
+            border-color: var(--dramatic-red);
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
+            outline: none;
+        }
+
+    .form-actions {
+        text-align: center;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--secondary-gold);
+    }
+
+        .form-actions .btn {
+            margin: 0 0.5rem;
+            padding: 15px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+            .form-actions .btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            }
+
+    @@media (max-width: 768px) {
+        .edit-revenge-page
+
+    {
+        padding: 1rem;
+    }
+
+    .revenge-form-container {
+        padding: 1.5rem;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+    }
+
+    .form-actions .btn {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

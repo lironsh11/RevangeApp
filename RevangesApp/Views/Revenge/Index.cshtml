@@ -1,0 +1,638 @@
+﻿@using RevengeApp.Models
+@model IEnumerable<RevengeApp.Models.Revenge>
+
+@{
+    ViewData["Title"] = "רשימת הנקמות שלי";
+}
+
+<div class="revenge-index-page">
+    <div class="revenge-header">
+        <h1 class="revenge-title">
+            💄 רשימת הנקמות שלי 🔥
+            <small class="drama-subtitle">כי כל אחת מגיע לה!</small>
+        </h1>
+
+        <div class="action-buttons">
+            <a asp-action="Create" class="btn btn-revenge btn-lg">
+                <i class="fas fa-plus"></i> נקמה חדשה
+            </a>
+        </div>
+    </div>
+
+    <div class="revenge-grid">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var revenge in Model)
+            {
+                <div class="revenge-card @GetStatusClass(revenge.Status)">
+                    <div class="revenge-card-header">
+                        <h3 class="revenge-card-title">@revenge.Title</h3>
+                        <div class="drama-level">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fas fa-kiss-wink-heart @(i <= revenge.DramaLevel ? "drama-active" : "drama-inactive")"></i>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="revenge-card-body">
+                        <p class="revenge-description">@revenge.Description</p>
+                        <div class="revenge-details">
+                            <span class="revenge-target">🎯 @revenge.Target</span>
+                            <span class="revenge-category">
+                                @{
+                                    string categoryName = revenge.Category switch
+                                    {
+                                        RevengeCategory.Ex => "💔 נקמת אקס",
+                                        RevengeCategory.Neighbor => "🏠 נקמת שכן",
+                                        RevengeCategory.AnnoyingCustomer => "😤 נקמת לקוחה מעצבנת",
+                                        RevengeCategory.Work => "💼 נקמת עבודה",
+                                        RevengeCategory.Family => "👨‍👩‍👧‍👦 נקמת משפחה",
+                                        RevengeCategory.Friend => "👯‍♀️ נקמת חברה",
+                                        RevengeCategory.Other => "🎭 אחר",
+                                        _ => "לא ידוע"
+                                    };
+                                }
+                                @categoryName
+                            </span>
+                            <span class="revenge-date">📅 @revenge.Date.ToString("dd/MM/yyyy")</span>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(revenge.Notes))
+                        {
+                            <div class="revenge-notes">
+                                <small><strong>הערות:</strong> @revenge.Notes</small>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="revenge-card-footer">
+                        <div class="status-badge status-@revenge.Status.ToString().ToLower()">
+                            @{
+                                string statusName = revenge.Status switch
+                                {
+                                    RevengeStatus.Planned => "🎯 מתוכננת",
+                                    RevengeStatus.InProgress => "⚡ בביצוע",
+                                    RevengeStatus.Completed => "✅ הושלמה",
+                                    RevengeStatus.Cancelled => "❌ בוטלה",
+                                    _ => "לא ידוע"
+                                };
+                            }
+                            @statusName
+                        </div>
+
+                        @if (revenge.Status == RevengeStatus.Completed && revenge.CompletedDate.HasValue)
+                        {
+                            <div class="completion-date">
+                                <small>הושלמה: @revenge.CompletedDate.Value.ToString("dd/MM/yyyy")</small>
+                            </div>
+                        }
+
+                        <div class="revenge-actions">
+                            @if (revenge.Status != RevengeStatus.Completed)
+                            {
+                                <button class="btn btn-success btn-sm complete-btn" data-id="@revenge.Id">
+                                    <i class="fas fa-check"></i> בוצע!
+                                </button>
+                            }
+                            <a asp-action="Edit" asp-route-id="@revenge.Id" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> ערוך
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@revenge.Id" class="btn btn-danger btn-sm"
+                               onclick="return confirm('בטוחה שרוצה למחוק את הנקמה הזו?')">
+                                <i class="fas fa-trash"></i> מחק
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="no-revenges">
+                <div class="no-revenges-icon">🎭</div>
+                <h3>אין עדיין נקמות!</h3>
+                <p>זמן להתחיל לתכנן כמה נקמות דרמטיות! 💄✨</p>
+                <a asp-action="Create" class="btn btn-revenge btn-lg">
+                    <i class="fas fa-magic"></i> בואי נתחיל בנקמה הראשונה!
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@functions {
+    private string GetStatusClass(RevengeStatus status)
+    {
+        return status switch
+        {
+            RevengeStatus.Planned => "status-planned",
+            RevengeStatus.InProgress => "status-progress",
+            RevengeStatus.Completed => "status-completed",
+            RevengeStatus.Cancelled => "status-cancelled",
+            _ => "status-planned"
+        };
+    }
+}
+
+<style>
+    /* משתני CSS */
+    :root {
+        --primary-pink: #ff1493;
+        --secondary-gold: #ffd700;
+        --dramatic-red: #dc143c;
+        --royal-purple: #8a2be2;
+        --sparkle-white: #ffffff;
+        --shadow-black: #000080;
+    }
+
+    .revenge-index-page {
+        padding: 2rem 1rem;
+        min-height: 100vh;
+    }
+
+    .revenge-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .revenge-title {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--secondary-gold);
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+        margin-bottom: 1rem;
+        animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    @@keyframes glow {
+        from
+
+    {
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.7), 0 0 30px var(--secondary-gold);
+    }
+
+    to {
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.7), 0 0 40px var(--primary-pink);
+    }
+
+    }
+
+    .drama-subtitle {
+        display: block;
+        font-size: 1.2rem;
+        color: var(--sparkle-white);
+        font-weight: 400;
+        margin-top: 0.5rem;
+    }
+
+    .action-buttons {
+        margin-top: 2rem;
+    }
+
+    .btn-revenge {
+        background: linear-gradient(45deg, var(--primary-pink), var(--dramatic-red));
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 25px;
+        padding: 12px 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-revenge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            background: linear-gradient(45deg, var(--dramatic-red), var(--primary-pink));
+            color: white;
+            text-decoration: none;
+        }
+
+    .revenge-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+        max-width: 1400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .revenge-card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 1.5rem;
+        color: var(--shadow-black);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: 3px solid var(--secondary-gold);
+        transform: translateY(0);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .revenge-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, var(--secondary-gold), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+
+        .revenge-card:hover::before {
+            animation: shimmer 1.5s ease-in-out;
+        }
+
+        .revenge-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+    @@keyframes shimmer {
+        0%
+
+    {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+        opacity: 0;
+    }
+
+    }
+
+    /* סטטוסים עם צבעים */
+    .status-planned {
+        border-left: 8px solid #ffa500;
+    }
+
+    .status-progress {
+        border-left: 8px solid #4169e1;
+    }
+
+    .status-completed {
+        border-left: 8px solid #32cd32;
+        background: linear-gradient(135deg, rgba(50,205,50,0.1), rgba(255,215,0,0.1));
+    }
+
+    .status-cancelled {
+        border-left: 8px solid #696969;
+    }
+
+    .revenge-card-header {
+        margin-bottom: 1rem;
+    }
+
+    .revenge-card-title {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: var(--dramatic-red);
+        margin-bottom: 0.5rem;
+    }
+
+    .drama-level {
+        display: flex;
+        gap: 0.3rem;
+    }
+
+    .drama-active {
+        color: var(--dramatic-red);
+        font-size: 1.2rem;
+        animation: pulse 2s infinite;
+    }
+
+    .drama-inactive {
+        color: #ddd;
+        font-size: 1.2rem;
+    }
+
+    @@keyframes pulse {
+        0%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    .revenge-card-body {
+        margin-bottom: 1.5rem;
+    }
+
+    .revenge-description {
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        color: var(--shadow-black);
+    }
+
+    .revenge-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .revenge-target, .revenge-category, .revenge-date {
+        background: rgba(255,20,147,0.1);
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255,20,147,0.3);
+    }
+
+    .revenge-notes {
+        margin-top: 1rem;
+        padding: 0.8rem;
+        background: rgba(255,215,0,0.1);
+        border-radius: 10px;
+        border-left: 4px solid var(--secondary-gold);
+        font-style: italic;
+    }
+
+    .revenge-card-footer {
+        border-top: 2px solid rgba(255,215,0,0.3);
+        padding-top: 1rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+        .status-badge.status-planned {
+            background: linear-gradient(45deg, #ffa500, #ff8c00);
+        }
+
+        .status-badge.status-progress {
+            background: linear-gradient(45deg, #4169e1, #1e90ff);
+        }
+
+        .status-badge.status-completed {
+            background: linear-gradient(45deg, #32cd32, #228b22);
+        }
+
+        .status-badge.status-cancelled {
+            background: linear-gradient(45deg, #696969, #2f4f4f);
+        }
+
+    .completion-date {
+        font-size: 0.8rem;
+        color: #32cd32;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .revenge-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+        .revenge-actions .btn {
+            flex: 1;
+            min-width: 80px;
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+            .revenge-actions .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                text-decoration: none;
+            }
+
+    .complete-btn {
+        background: linear-gradient(45deg, #32cd32, #228b22);
+        border: none;
+        color: white;
+    }
+
+        .complete-btn:hover {
+            background: linear-gradient(45deg, #228b22, #32cd32);
+            color: white;
+        }
+
+    .btn-warning {
+        background: linear-gradient(45deg, #ffc107, #e0a800);
+        color: white;
+        border: none;
+    }
+
+        .btn-warning:hover {
+            background: linear-gradient(45deg, #e0a800, #ffc107);
+            color: white;
+        }
+
+    .btn-danger {
+        background: linear-gradient(45deg, #dc3545, #c82333);
+        color: white;
+        border: none;
+    }
+
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #c82333, #dc3545);
+            color: white;
+        }
+
+    .no-revenges {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 4rem 2rem;
+        background: rgba(255,255,255,0.1);
+        border-radius: 25px;
+        margin: 2rem auto;
+        max-width: 600px;
+        border: 3px solid rgba(255,215,0,0.5);
+    }
+
+    .no-revenges-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+
+    @@keyframes bounce {
+        0%, 100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+
+    }
+
+    .no-revenges h3 {
+        font-size: 2rem;
+        color: var(--secondary-gold);
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .no-revenges p {
+        font-size: 1.2rem;
+        color: var(--sparkle-white);
+        margin-bottom: 2rem;
+    }
+
+    /* אנימציית השלמת נקמה */
+    .completed-animation {
+        animation: celebration 1s ease-in-out;
+    }
+
+    @@keyframes celebration {
+        0%
+
+    {
+        transform: scale(1) rotate(0deg);
+    }
+
+    25% {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(-5deg);
+    }
+
+    75% {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    }
+
+    /* רספונסיביות למובייל */
+    @@media (max-width: 768px) {
+        .revenge-grid
+
+    {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+
+    .revenge-title {
+        font-size: 2rem;
+    }
+
+    .revenge-card {
+        padding: 1rem;
+    }
+
+    .revenge-details {
+        font-size: 0.8rem;
+    }
+
+    .revenge-actions {
+        flex-direction: column;
+    }
+
+        .revenge-actions .btn {
+            flex: none;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+    }
+</style>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.complete-btn').click(function() {
+                var revengeId = $(this).data('id');
+                var button = $(this);
+                var card = button.closest('.revenge-card');
+
+                $.post('/Revenge/Complete', { id: revengeId }, function(result) {
+                    // עדכן את הכרטיס
+                    card.removeClass('status-planned status-progress')
+                        .addClass('status-completed');
+
+                    // עדכן את הסטטוס
+                    card.find('.status-badge')
+                        .removeClass('status-planned status-progress')
+                        .addClass('status-completed')
+                        .html('✅ הושלמה');
+
+                    // החלף את הכפתור
+                    button.html('<i class="fas fa-crown"></i> הושלם!')
+                          .removeClass('btn-success complete-btn')
+                          .addClass('btn-info')
+                          .prop('disabled', true);
+
+                    // הוסף אפקט דרמטי
+                    card.addClass('completed-animation');
+
+                    // הוסף תאריך השלמה
+                    var now = new Date();
+                    var dateStr = now.toLocaleDateString('he-IL');
+                    button.closest('.revenge-actions').before(
+                        '<div class="completion-date"><small>הושלמה: ' + dateStr + '</small></div>'
+                    );
+
+                    setTimeout(() => {
+                        card.removeClass('completed-animation');
+                    }, 1000);
+                }).fail(function() {
+                    alert('שגיאה בעדכון הנקמה. נסי שוב!');
+                });
+            });
+
+            // אנימציות כניסה
+            $(window).on('scroll', function() {
+                $('.revenge-card').each(function() {
+                    const elementTop = $(this).offset().top;
+                    const windowBottom = $(window).scrollTop() + $(window).height();
+
+                    if (elementTop < windowBottom - 50) {
+                        $(this).addClass('animate-in');
+                    }
+                });
+            });
+        });
+    </script>
+}
