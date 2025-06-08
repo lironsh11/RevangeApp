@@ -254,8 +254,9 @@
         }
 
         .revenge-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        
         }
 
     @@keyframes shimmer {
@@ -416,6 +417,8 @@
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
+        z-index: 10; 
+        pointer-events: auto;
     }
 
         .revenge-actions .btn {
@@ -429,12 +432,15 @@
             text-decoration: none;
             text-align: center;
             display: inline-block;
+            pointer-events: auto;
+            position: relative;
+            z-index: 11;
+            transition: all 0.2s ease;
         }
 
             .revenge-actions .btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-                text-decoration: none;
+                transform: translateY(-2px) !important; 
+                z-index: 12;
             }
 
     .complete-btn {
