@@ -16,6 +16,7 @@ namespace RevengeApp.Controllers
 
         public async Task<IActionResult> Index()
         {
+
             try
             {
                 // Check if user is authenticated
