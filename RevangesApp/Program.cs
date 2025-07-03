@@ -5,16 +5,19 @@ using RevengeApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Minimal services for Azure
+// ------------------------
+// Service configuration
+// ------------------------
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-// Use In-Memory database
+// In-memory database
 builder.Services.AddDbContext<RevengeContext>(options =>
     options.UseInMemoryDatabase("RevengeDB"));
 
-// Add Identity with minimal configuration
-builder.Services.AddDefaultIdentity<IdentityUser>(options => {
+// Identity (minimal settings)
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
     options.Password.RequireDigit = false;
     options.Password.RequiredLength = 4;
     options.Password.RequireNonAlphanumeric = false;
@@ -25,34 +28,41 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => {
 })
 .AddEntityFrameworkStores<RevengeContext>();
 
-// Add services
+// DI services
 builder.Services.AddScoped<IRevengeService, RevengeService>();
+
+// --------------------------------------------------
+// ** Listen on every interface, port 5000 **
+// --------------------------------------------------
+builder.WebHost.UseUrls("http://0.0.0.0:5000");
 
 var app = builder.Build();
 
-// Minimal pipeline
+// ------------------------
+// HTTP request pipeline
+// ------------------------
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Simple database initialization
+// Ensure in-memory DB exists
 try
 {
     using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<RevengeContext>();
-    context.Database.EnsureCreated();
+    var dbContext = scope.ServiceProvider.GetRequiredService<RevengeContext>();
+    dbContext.Database.EnsureCreated();
 }
 catch
 {
-    // Ignore database errors for now
+    // Ignore DB init errors for now
 }
 
+// Routes
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 app.MapRazorPages();
 
 app.Run();
